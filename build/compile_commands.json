@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui_draw.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui_draw.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui_draw.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui_draw.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui_impl_opengl3.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui_impl_opengl3.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui_impl_opengl3.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui_impl_opengl3.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui_impl_sdl2.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui_impl_sdl2.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui_impl_sdl2.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui_impl_sdl2.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui_tables.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui_tables.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui_tables.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui_tables.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/imgui/imgui_widgets.cpp.o -c /Users/hasircioglu/Desktop/Loader/imgui/imgui_widgets.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/imgui/imgui_widgets.cpp",
+  "output": "CMakeFiles/Loader.dir/imgui/imgui_widgets.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/src/Main.cpp.o -c /Users/hasircioglu/Desktop/Loader/src/Main.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/src/Main.cpp",
+  "output": "CMakeFiles/Loader.dir/src/Main.cpp.o"
+},
+{
+  "directory": "/Users/hasircioglu/Desktop/Loader/build",
+  "command": "/usr/bin/clang++  -I/opt/homebrew/Cellar/sdl2/2.30.4/include -I/Users/hasircioglu/Desktop/Loader/imgui/assets/fonts -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -I/opt/homebrew/include -I/Users/hasircioglu/Desktop/Loader/imgui -I/Users/hasircioglu/Desktop/Loader/imgui/backends -isystem /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2 -g -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -o CMakeFiles/Loader.dir/src/menu/Menu.cpp.o -c /Users/hasircioglu/Desktop/Loader/src/menu/Menu.cpp",
+  "file": "/Users/hasircioglu/Desktop/Loader/src/menu/Menu.cpp",
+  "output": "CMakeFiles/Loader.dir/src/menu/Menu.cpp.o"
+}
+]

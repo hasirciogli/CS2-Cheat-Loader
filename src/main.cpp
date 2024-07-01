@@ -1,5 +1,6 @@
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl2.h"
+// main.cpp
+#include "backends/imgui_impl_opengl3.h"
+#include "backends/imgui_impl_sdl2.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GL/glew.h>

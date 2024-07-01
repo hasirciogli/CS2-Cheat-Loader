@@ -1,7 +1,0 @@
-.idea
-.vs
-.vscode/settings.json
-build
-*.exe
-*.dll
-*.pdb

@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 
+#include "Hoffer.hpp"
 #include "menu/Menu.hpp"
 
 int main(int, char **) {
@@ -54,8 +55,7 @@ int main(int, char **) {
 
   CMenu::Get().Init(window, gl_context);
 
-  // Setup Dear ImGui style
-  ImGui::StyleColorsDark();
+  CMenu::Get().StyleColorsMine();
 
   // Setup Platform/Renderer bindings
   ImGui_ImplSDL2_InitForOpenGL(window, gl_context);

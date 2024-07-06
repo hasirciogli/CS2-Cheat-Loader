@@ -1,13 +1,52 @@
 #include "Menu.hpp"
+#include "./../utils/File.hpp"
+#include "./fonts/OpenSansBold.byte.hpp"
+#include "./fonts/OpenSansExtraBold.byte.hpp"
+#include "./fonts/OpenSansLight.byte.hpp"
+#include "./fonts/OpenSansMedium.byte.hpp"
+#include "./fonts/OpenSansRegular.byte.hpp"
+#include "./images/Character.hpp"
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_sdl2.h"
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GL/glew.h>
+#include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+#ifndef HLERP
+#define HLERP(a, b, t) ((a) + (t) * ((b) - (a)))
+#endif
+
+void fnRenderDebugMenu();
+void fnPushMenuStyleVars();
+void fnPopMenuStyleVars();
+
+bool afterTime(float time = 1, bool *affected = nullptr) {
+  // Başlangıç zamanını al
+  static auto start = std::chrono::high_resolution_clock::now();
+  static auto previous = start;
+
+  auto current = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<float> elapsed = current - start;
+  std::chrono::duration<float> deltaTime = current - previous;
+
+  // İlerleme kontrolü
+  previous = current;
+
+  // 3 saniye geçtikten sonra işlemi gerçekleştir
+  if (elapsed.count() >= time && !*affected) {
+    *affected = true;
+    return true;
+  }
+  return false;
+}
 
 void imspaceMacro(float x, float y) {
   ImGui::SetCursorPos(
@@ -57,54 +96,68 @@ bool Spinner(const char *label, float radius, int thickness,
   return true;
 }
 
-void fnSpinnedMessageOverlay(const char *message = "Loading...") {
-  auto cm = CMenu::Get();
-  float radius = 16;
-  float thickness = 3;
-  float messagePadding = 10;
-
-  ImGui::BeginChild("##overlay", {-1, -1});
-  ImVec2 tsize = ImGui::CalcTextSize(message);
-  imspaceMacro(cm.config->width / 2 - (radius + thickness),
-               cm.config->height / 2 - (radius + thickness) - tsize.y / 2 -
-                   messagePadding);
-  Spinner("##spinner", radius, thickness, IM_COL32(20, 186, 40, 255));
-
-  imspaceMacro(cm.config->width / 2 - (tsize.x / 2), messagePadding);
-  ImGui::Text(message);
-
-  ImGui::EndChild();
-}
-void fnRenderDebugMenu();
-void fnPushMenuStyleVars();
-void fnPopMenuStyleVars();
-
 void CMenu::Init(SDL_Window *window, SDL_GLContext gl_context) {
   ImGuiIO &io = ImGui::GetIO();
   this->io = io;
-  this->fonts->ifVerdana = io.Fonts->AddFontFromFileTTF(
-      "assets/fonts/verdana.ttf", 18.0f * fDpiScale);
+  struct SFRGC {
+    SFRGC(const char *name, float size) {
+      this->name = name;
+      this->size = size;
+    }
+    const char *name;
+    float size;
+  };
 
-  io.FontDefault = this->fonts->ifVerdana;
-  fonts->ifVerdanaLoginTitle = io.Fonts->AddFontFromFileTTF(
-      "assets/fonts/verdana.ttf", 86.0f * fDpiScale);
+  SFRGC fontSizes[] = {SFRGC("sm", 14),  SFRGC("base", 16), SFRGC("lg", 18),
+                       SFRGC("xl", 20),  SFRGC("2xl", 24),  SFRGC("3xl", 30),
+                       SFRGC("4xl", 36), SFRGC("5xl", 48),  SFRGC("6xl", 60),
+                       SFRGC("7xl", 72), SFRGC("8xl", 96),  SFRGC("9xl", 128)};
+
+  for (auto &_font : fontSizes) {
+    this->fonts->ifOpenSansLight[_font.name] = io.Fonts->AddFontFromMemoryTTF(
+        FontBytes::OpenSansLight, FontBytes::OpenSansLight_size, _font.size);
+
+    this->fonts->ifOpenSansRegular[_font.name] = io.Fonts->AddFontFromMemoryTTF(
+        FontBytes::OpenSansRegular, FontBytes::OpenSansRegular_size,
+        _font.size);
+
+    this->fonts->ifOpenSansMedium[_font.name] = io.Fonts->AddFontFromMemoryTTF(
+        FontBytes::OpenSansMedium, FontBytes::OpenSansMedium_size, _font.size);
+
+    this->fonts->ifOpenSansBold[_font.name] = io.Fonts->AddFontFromMemoryTTF(
+        FontBytes::OpenSansBold, FontBytes::OpenSansBold_size, _font.size);
+
+    this->fonts->ifOpenSansExtraBold[_font.name] =
+        io.Fonts->AddFontFromMemoryTTF(FontBytes::OpenSansExtraBold,
+                                       FontBytes::OpenSansExtraBold_size,
+                                       _font.size);
+  }
+
+  int w, h;
+  w = 512;
+  h = 384;
+  // load login right image
+  this->loginRightImage = reinterpret_cast<ImTextureID *>(stbi_load_from_memory(
+      ImageBytes::sir_bloody_miami_darryl_png,
+      ImageBytes::sir_bloody_miami_darryl_png_size, &w, &h, nullptr, 4));
+
+  std::cout << this->fonts->ifOpenSansBold.size() << std::endl;
 
   ImFontConfig config;
   config.OversampleH = 2;
   config.OversampleV = 1;
   config.GlyphExtraSpacing.x = .4f;
-  fonts->ifVerdanaLoginTitle = io.Fonts->AddFontFromFileTTF(
-      "assets/fonts/verdana.ttf", 60.0f * fDpiScale, &config);
+
+  io.FontDefault = fonts->ifOpenSansMedium["xl"];
 }
 
 void CMenu::StyleColorsMine(ImGuiStyle *dst) {
   ImVec4 backgroundColor =
-      ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Koyu gri arka plan rengi
+      ImVec4(0.06f, 0.06f, 0.06f, 1.0f); // Koyu gri arka plan rengi
 
   ImVec4 baseColor = ImVec4(0.019f, 0.572f, 0.071f, 1.0f); // #059212 rengi
 
-  ImVec4 buttonColor =
-      ImVec4(0.019f, 0.572f, 0.071f, 0.6f); // Normal buton rengi
+  ImVec4 buttonColor = ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // Normal buton rengi
   ImVec4 buttonHovered = ImVec4(0.019f, 0.572f, 0.071f, 1.0f); // Hover durumu
   ImVec4 buttonActive = ImVec4(0.012f, 0.412f, 0.051f, 1.0f); // Tıklanmış durum
 
@@ -188,64 +241,98 @@ void CMenu::StyleColorsMine(ImGuiStyle *dst) {
 }
 
 void CMenu::RenderLoginBase() {
+  ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+  ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+  ImGui::BeginChild("##login-left", {(config->width / 2) * fDpiScale, -1}, 0,
+                    ImGuiWindowFlags_NoScrollbar |
+                        ImGuiWindowFlags_NoScrollWithMouse);
   {
-    // Big Title
-    imspaceMacro(0 * fDpiScale, 70 * fDpiScale);
-    ImGui::PushFont(this->fonts->ifVerdanaLoginTitle);
-    ImVec2 titleSize = ImGui::CalcTextSize("Go BRRRR");
-    imspaceMacro((this->config->width * fDpiScale) / 2 - titleSize.x / 2, 0);
-    ImGui::Text("Go BRRRR");
-    ImGui::PopFont();
-  }
-
-  {
-    float paddingY = 6 * fDpiScale;
-    float spacingY = 10 * fDpiScale;
-    float innerSpacingY = 10 * fDpiScale;
-    // inputs
-    ImGui::PushItemWidth(this->config->width * fDpiScale - 80 * fDpiScale);
-    imspaceMacro(40 * fDpiScale, 30 * fDpiScale);
-    ImGui::BeginGroup();
-
     {
-      ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.5 * fDpiScale);
-      ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
-                          {8 * fDpiScale, paddingY});
-      ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {0 * fDpiScale, spacingY});
-      ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing,
-                          {0 * fDpiScale, innerSpacingY});
-      {
-
-        static char username[128] = "sasa";
-        static char password[128] = "sasa";
-        ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Username");
-        ImGui::InputText("##username", username, IM_ARRAYSIZE(username),
-                         ImGuiInputTextFlags_AutoSelectAll);
-        ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Password");
-        ImGui::InputText("##password", password, IM_ARRAYSIZE(password),
-                         ImGuiInputTextFlags_Password |
-                             ImGuiInputTextFlags_AutoSelectAll);
-
-        imspaceMacro(0 * fDpiScale, 12 * fDpiScale);
-        if (ImGui::Button("Login",
-                          {this->config->width * fDpiScale - 80 * fDpiScale,
-                           40 * fDpiScale})) {
-          printf("Login\n");
-        }
-      }
-
-      ImGui::PopStyleVar(4);
+      // Big Title
+      ImGui::PushFont(this->fonts->ifOpenSansExtraBold["7xl"]);
+      ImVec2 titleSize = ImGui::CalcTextSize("Go BRRRR");
+      imspaceMacro(((this->config->width * fDpiScale) / 2) / 2 -
+                       titleSize.x / 2,
+                   30 * fDpiScale);
+      ImGui::Text("Go BRRRR");
+      ImGui::PopFont();
     }
 
-    ImGui::EndGroup();
-    ImGui::PopItemWidth();
+    {
+      float paddingY = 6 * fDpiScale;
+      float spacingY = 10 * fDpiScale;
+      float innerSpacingY = 10 * fDpiScale;
+      // inputs
+      ImGui::PushItemWidth((this->config->width / 2) * fDpiScale -
+                           70 * fDpiScale);
+      imspaceMacro(40 * fDpiScale, 20 * fDpiScale);
+      ImGui::BeginGroup();
+
+      {
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.5 * fDpiScale);
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
+                            {8 * fDpiScale, paddingY});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,
+                            {0 * fDpiScale, spacingY});
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing,
+                            {0 * fDpiScale, innerSpacingY});
+        {
+
+          static char username[128] = "sasa";
+          static char password[128] = "sasa";
+          ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Username");
+          ImGui::InputText("##username", username, IM_ARRAYSIZE(username),
+                           ImGuiInputTextFlags_AutoSelectAll);
+          ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Password");
+          ImGui::InputText("##password", password, IM_ARRAYSIZE(password),
+                           ImGuiInputTextFlags_Password |
+                               ImGuiInputTextFlags_AutoSelectAll);
+
+          imspaceMacro(0 * fDpiScale, 12 * fDpiScale);
+          if (ImGui::Button("Login", {(config->width / 2 - 70) * fDpiScale,
+                                      55 * fDpiScale})) {
+            printf("Login\n");
+          }
+        }
+
+        ImGui::PopStyleVar(4);
+      }
+
+      ImGui::EndGroup();
+      ImGui::PopItemWidth();
+    }
   }
+  ImGui::EndChild();
+
+  ImGui::SameLine(0, 0); // Aynı satırda devam ediyor, boşluk olmadan
+
+  // SetCursorPosX ile pozisyonu ayarla
+  float posX = ImGui::GetCursorPosX();
+  ImGui::SetCursorPosX(posX + ImGui::GetStyle().ItemSpacing.x);
+
+  ImGui::BeginChild(
+      "##login-right", {(this->config->width / 2) * fDpiScale, -1}, 0,
+      ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+  {
+    // image
+    ImGui::Image(*loginRightImage, ImVec2(100, 100));
+  }
+  ImGui::EndChild();
+  ImGui::PopStyleVar(2);
+}
+
+void loadingPage() {
+  // set bginChild alpha
+  ImGui::BeginChild("##xxoverlayZSWEF", {-1, -1});
+
+  imspaceMacro((CMenu::Get().config->width * CMenu::Get().fDpiScale) / 2 - 18,
+               (CMenu::Get().config->height * CMenu::Get().fDpiScale) / 2 - 18);
+  Spinner("sex", 22, 4, ImColor(80, 200, 80, 255));
+
+  ImGui::EndChild();
 }
 
 void CMenu::Render() {
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame();
-  ImGui::NewFrame();
 
   if (!this->bRenderInit) {
     this->bRenderInit = true;
@@ -257,12 +344,17 @@ void CMenu::Render() {
   }
 
   fnPushMenuStyleVars();
-  ImGui::SetNextWindowSize({this->config->width * fDpiScale,
-                            this->config->height * this->fDpiScale});
+
+  static float width, height = 200 * fDpiScale;
+  width = HLERP(width, this->config->width * fDpiScale, io.DeltaTime * 7);
+  height = HLERP(height, this->config->height * fDpiScale, io.DeltaTime * 7);
+  ImGui::SetNextWindowSize({width, height});
+
   // Render your GUI
-  ImGui::Begin("Hello, world!s a asa", (bool *)false,
+  ImGui::Begin("##main menu homebase", (bool *)false,
                ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                   ImGuiWindowFlags_NoTitleBar);
+                   ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar |
+                   ImGuiWindowFlags_NoScrollWithMouse);
   {
     // // Kapatma düğmesi sağ üst köşede
     // imspaceMacro(this->config->width * fDpiScale - 30, 10 * fDpiScale);
@@ -274,51 +366,74 @@ void CMenu::Render() {
     // }
     // ImGui::PopStyleVar(2);
 
-    if (false)
-      fnSpinnedMessageOverlay();
-    else {
-      if (this->config->state != config->lastState &&
-          config->stateOpacity > 0) {
-        config->stateOpacity -= .1;
-      }
-
-      if (config->lastState == config->state && config->stateOpacity < 1) {
-        config->stateOpacity += .1;
-      }
-
-      if (config->state != config->lastState && config->stateOpacity <= 0) {
-        config->lastState = config->state;
-      }
-
-      // render states in switch
-      ImGui::PushStyleVar(ImGuiStyleVar_Alpha, config->stateOpacity);
-
-      ImGui::BeginChild("##state", {this->config->width * fDpiScale,
-                                    this->config->height * fDpiScale});
-      {
-        switch (config->lastState) {
-        case EMenuState::LOGIN:
-          RenderLoginBase();
-          break;
-        case EMenuState::MAIN: {
-          ImGui::Text("Hello From MAIN");
-        } break;
-        case EMenuState::SETTINGS: {
-          ImGui::Text("Hello From SETTINGS");
-        } break;
-        case EMenuState::ABOUT: {
-          ImGui::Text("Hello From ABOUT");
-        } break;
-        case EMenuState::EXIT:
-          break;
-        }
-      }
-      ImGui::EndChild();
-
-      ImGui::PopStyleVar(1);
-
-      ImClamp(config->stateOpacity, 0.f, 1.f);
+    if (this->config->state != config->lastState && config->stateOpacity > 0) {
+      config->stateOpacity -= .1f;
     }
+
+    if (config->lastState == config->state && config->stateOpacity < 1) {
+      config->stateOpacity += .1;
+    }
+
+    if (config->state != config->lastState && config->stateOpacity <= 0) {
+      config->lastState = config->state;
+    }
+
+    // render states in switch
+    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, config->stateOpacity);
+    ImGui::BeginChild("##state", {-1, -1}, 0,
+                      ImGuiWindowFlags_NoScrollbar |
+                          ImGuiWindowFlags_NoScrollWithMouse);
+
+    static bool wfst, wfst2 = false;
+    if (afterTime(3, &wfst)) {
+      config->width = 750;
+      config->height = 400;
+    } else if (afterTime(4, &wfst2) && wfst) {
+      config->state = EMenuState::LOGIN;
+    }
+
+    if (config->stateOpacity <= .8f && config->lastState == config->state) {
+      switch (config->lastState) {
+      case EMenuState::LOGIN: {
+        config->width = 750;
+        config->height = 400;
+      } break;
+      case EMenuState::MAIN:
+        config->width = 200;
+        config->height = 200;
+        break;
+      case EMenuState::EXIT:
+        config->width = 200;
+        config->height = 200;
+        break;
+      }
+    }
+
+    {
+      switch (config->lastState) {
+      case EMenuState::LOADING:
+        loadingPage();
+        break;
+      case EMenuState::LOGIN:
+        this->RenderLoginBase();
+        break;
+      case EMenuState::MAIN: {
+        ImGui::Text("Hello From MAIN");
+      } break;
+      case EMenuState::SETTINGS: {
+        ImGui::Text("Hello From SETTINGS");
+      } break;
+      case EMenuState::ABOUT: {
+        ImGui::Text("Hello From ABOUT");
+      } break;
+      case EMenuState::EXIT:
+        loadingPage();
+        break;
+      }
+    }
+    ImGui::EndChild();
+
+    ImGui::PopStyleVar(1);
   }
   ImGui::End();
 
@@ -327,9 +442,7 @@ void CMenu::Render() {
   fnPopMenuStyleVars();
 
   fnRenderDebugMenu();
-
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  ImClamp(config->stateOpacity, 0.f, 1.f);
 }
 
 void CMenu::Shutdown() {
@@ -362,17 +475,17 @@ void fnRenderDebugMenu() {
     CMenu::Get().config->state = EMenuState::ABOUT;
   }
 
+  if (ImGui::Button("state EXIT")) {
+    CMenu::Get().config->state = EMenuState::EXIT;
+  }
+
   ImGui::End();
 }
 
 void fnPushMenuStyleVars() {
   ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 8 * CMenu::Get().fDpiScale);
-  ImGui::PushFont(CMenu::Get().fonts->ifVerdana);
-  ImGui::SetNextWindowBgAlpha(.97);
+  ImGui::SetNextWindowBgAlpha(.99);
 }
 
-void fnPopMenuStyleVars() {
-  ImGui::PopFont();
-  ImGui::PopStyleVar(2);
-}
+void fnPopMenuStyleVars() { ImGui::PopStyleVar(2); }

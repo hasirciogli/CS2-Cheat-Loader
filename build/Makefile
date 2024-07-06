@@ -321,6 +321,30 @@ src/menu/Menu.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Loader.dir/build.make CMakeFiles/Loader.dir/src/menu/Menu.cpp.s
 .PHONY : src/menu/Menu.cpp.s
 
+src/utils/File.o: src/utils/File.cpp.o
+.PHONY : src/utils/File.o
+
+# target to build an object file
+src/utils/File.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Loader.dir/build.make CMakeFiles/Loader.dir/src/utils/File.cpp.o
+.PHONY : src/utils/File.cpp.o
+
+src/utils/File.i: src/utils/File.cpp.i
+.PHONY : src/utils/File.i
+
+# target to preprocess a source file
+src/utils/File.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Loader.dir/build.make CMakeFiles/Loader.dir/src/utils/File.cpp.i
+.PHONY : src/utils/File.cpp.i
+
+src/utils/File.s: src/utils/File.cpp.s
+.PHONY : src/utils/File.s
+
+# target to generate assembly for a file
+src/utils/File.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Loader.dir/build.make CMakeFiles/Loader.dir/src/utils/File.cpp.s
+.PHONY : src/utils/File.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -354,6 +378,9 @@ help:
 	@echo "... src/menu/Menu.o"
 	@echo "... src/menu/Menu.i"
 	@echo "... src/menu/Menu.s"
+	@echo "... src/utils/File.o"
+	@echo "... src/utils/File.i"
+	@echo "... src/utils/File.s"
 .PHONY : help
 
 

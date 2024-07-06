@@ -15,6 +15,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Loader.dir/src/Main.cpp.o.d"
   "CMakeFiles/Loader.dir/src/menu/Menu.cpp.o"
   "CMakeFiles/Loader.dir/src/menu/Menu.cpp.o.d"
+  "CMakeFiles/Loader.dir/src/utils/File.cpp.o"
+  "CMakeFiles/Loader.dir/src/utils/File.cpp.o.d"
   "Loader"
   "Loader.pdb"
 )

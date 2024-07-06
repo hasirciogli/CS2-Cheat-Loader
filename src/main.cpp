@@ -5,12 +5,72 @@
 #include "imgui_internal.h"
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <array>
+#include <iostream>
 #include <stdio.h>
+#include <string>
+#include <vector>
 
 #include "Hoffer.hpp"
 #include "menu/Menu.hpp"
+#include "utils/File.hpp"
+
+#ifndef HLERP
+#define HLERP(a, b, t) ((a) + (t) * ((b) - (a)))
+#endif
+
+#ifdef BUILD_DEV
+struct SLFont {
+  SLFont(std::string _name, std::string _path) : name(_name), path(_path) {
+    this->name = _name;
+    this->path = _path;
+  }
+
+  std::string name;
+  std::string path;
+};
+std::vector<SLFont> lmFonts = {
+    SLFont("OpenSansMedium", "./assets/fonts/open-sans/OpenSans-Medium.ttf"),
+    SLFont("OpenSansBold", "./assets/fonts/open-sans/OpenSans-Bold.ttf"),
+    SLFont("OpenSansExtraBold",
+           "./assets/fonts/open-sans/OpenSans-ExtraBold.ttf"),
+    SLFont("OpenSansLight", "./assets/fonts/open-sans/OpenSans-Light.ttf"),
+    SLFont("OpenSansRegular", "./assets/fonts/open-sans/OpenSans-Regular.ttf"),
+};
+void buildFonts() {
+  for (auto &font : lmFonts) {
+    File fileX(font.path.c_str());
+
+    auto xx = fileX.readFileToByteArray(font.path);
+
+    // write to file.
+
+    fileX.saveByteArrayToFile(+"./src/menu/fonts/" + font.name + ".byte.hpp",
+                              xx, font.name);
+
+    std::cout << "xx.size() = " << xx.size() << std::endl;
+  }
+}
+#endif
 
 int main(int, char **) {
+#ifdef BUILD_DEV
+  // buildFonts();
+  // return 0;
+
+  // File fileX("./assets/images/sir-bloody-miami-darryl.png");
+
+  //   auto xx =
+  //   fileX.readFileToByteArray("./assets/images/sir-bloody-miami-darryl.png");
+
+  //   // write to file.
+
+  //   fileX.saveByteArrayToFile("./assets/images/sir-bloody-miami-darryl.png.txt",
+  //   xx, "sir-bloody-miami-darryl.png");
+
+  //   std::cout << "xx.size() = " << xx.size() << std::endl;
+#endif
+
   // Setup SDL
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) !=
       0) {
@@ -75,10 +135,15 @@ int main(int, char **) {
         done = true;
     }
 
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
     CMenu::Get().Render();
 
     // Rendering
     ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
     glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
     glClear(GL_COLOR_BUFFER_BIT);

@@ -1,22 +1,29 @@
 // Create Singleton class Menu that will handle all the ImGui stuff.
 #include "imgui.h"
 #include <SDL2/SDL.h>
+#include <vector>
+#include <unordered_map>
 
-enum class EMenuState { LOGIN, MAIN, SETTINGS, ABOUT, EXIT };
+enum class EMenuState { LOADING, LOGIN, MAIN, SETTINGS, ABOUT, EXIT };
 struct SMenuConfig {
   bool opacity = 1.f;
-  float width = 400;
-  float height = 400;
+  float width = 350;
+  float height = 350;
 
   // state
-  EMenuState state = EMenuState::LOGIN;
-  EMenuState lastState = EMenuState::LOGIN;
+  EMenuState state = EMenuState::LOADING;
+  EMenuState lastState = EMenuState::LOADING;
   float stateOpacity = 1.f;
 };
 
 struct SMenuFonts {
-  ImFont *ifVerdana = nullptr;
-  ImFont *ifVerdanaLoginTitle = nullptr;
+  std::unordered_map<std::string, ImFont*> ifOpenSansBold;
+  std::unordered_map<std::string, ImFont*> ifOpenSansExtraBold;
+  std::unordered_map<std::string, ImFont*> ifOpenSansLight;
+  std::unordered_map<std::string, ImFont*> ifOpenSansMedium;
+  std::unordered_map<std::string, ImFont*> ifOpenSansRegular;
+
+  ImFont* sex = nullptr;
 };
 
 class CMenu {
@@ -30,8 +37,12 @@ public:
   // io
   ImGuiIO &io = ImGui::GetIO();
   bool bRenderInit = false;
-  float fDpiScale = 1.0f;
+  float fDpiScale = .8f;
   float fLastDpiScale = 1.0f;
+
+  ImTextureID* loginRightImage = nullptr;
+
+  bool firstLoadInited = false;
 
   SMenuConfig *config = new SMenuConfig();
   SMenuFonts *fonts = new SMenuFonts();

@@ -3332,6 +3332,7 @@ CMakeFiles/Loader.dir/src/menu/Menu.cpp.o: /Users/hasircioglu/Desktop/Loader/src
   /Users/hasircioglu/Desktop/Loader/imgui/imgui_internal.h \
   /Users/hasircioglu/Desktop/Loader/imgui/imstb_textedit.h \
   /Users/hasircioglu/Desktop/Loader/include/stb_image.h \
+  /Users/hasircioglu/Desktop/Loader/src/utils/Blur.hpp \
   /Users/hasircioglu/Desktop/Loader/src/utils/File.hpp \
   /Users/hasircioglu/Desktop/Loader/src/menu/fonts/OpenSansBold.byte.hpp \
   /Users/hasircioglu/Desktop/Loader/src/menu/fonts/OpenSansExtraBold.byte.hpp \
@@ -3390,7 +3391,8 @@ CMakeFiles/Loader.dir/src/menu/Menu.cpp.o: /Users/hasircioglu/Desktop/Loader/src
   /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2/SDL_video.h \
   /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2/begin_code.h \
   /opt/homebrew/Cellar/sdl2/2.30.4/include/SDL2/close_code.h \
-  /opt/homebrew/include/GL/glew.h
+  /opt/homebrew/include/GL/glew.h \
+  /opt/homebrew/include/GLFW/glfw3.h
 
 CMakeFiles/Loader.dir/src/utils/File.cpp.o: /Users/hasircioglu/Desktop/Loader/src/utils/File.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/Availability.h \
@@ -4265,6 +4267,8 @@ CMakeFiles/Loader.dir/src/utils/File.cpp.o: /Users/hasircioglu/Desktop/Loader/sr
   /Users/hasircioglu/Desktop/Loader/src/utils/File.hpp
 
 
+/opt/homebrew/include/GLFW/glfw3.h:
+
 /Users/hasircioglu/Desktop/Loader/src/menu/images/Character.hpp:
 
 /Users/hasircioglu/Desktop/Loader/src/menu/fonts/OpenSansRegular.byte.hpp:
@@ -4274,6 +4278,8 @@ CMakeFiles/Loader.dir/src/utils/File.cpp.o: /Users/hasircioglu/Desktop/Loader/sr
 /Users/hasircioglu/Desktop/Loader/src/menu/fonts/OpenSansExtraBold.byte.hpp:
 
 /Users/hasircioglu/Desktop/Loader/src/menu/fonts/OpenSansBold.byte.hpp:
+
+/Users/hasircioglu/Desktop/Loader/src/utils/Blur.hpp:
 
 /Users/hasircioglu/Desktop/Loader/src/utils/File.hpp:
 

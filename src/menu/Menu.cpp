@@ -1,4 +1,5 @@
 #include "Menu.hpp"
+#include "./../utils/Blur.hpp"
 #include "./../utils/File.hpp"
 #include "./fonts/OpenSansBold.byte.hpp"
 #include "./fonts/OpenSansExtraBold.byte.hpp"
@@ -11,6 +12,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <SDL_stdinc.h>
 #include <chrono>
 #include <cstddef>
@@ -74,6 +76,31 @@ bool LoadTextureFromByteArray(const unsigned char *image_data, int data_size,
   *out_height = image_height;
 
   return true;
+}
+void RenderImageWithGradient(ImTextureID texture_id, const ImVec2 &pos,
+                             const ImVec2 &size) {
+  ImDrawList *draw_list = ImGui::GetWindowDrawList();
+  float start_alpha = 1.0f; // Başlangıç alpha değeri
+  float end_alpha = 0.f;    // Bitiş alpha değeri
+
+  int steps = static_cast<int>(size.x); // Her piksel sütunu için bir adım
+  for (int i = 0; i < steps; ++i) {
+    float t = static_cast<float>(i) /
+              (steps - 1); // Mevcut adımın normalleşmiş değeri [0, 1]
+    float alpha = (1.0f - t) * start_alpha +
+                  t * end_alpha; // Lineer interpolasyon ile alpha değeri
+
+    ImVec2 uv0(i / size.x, 0.0f);       // UV koordinatlarının başlangıcı
+    ImVec2 uv1((i + 1) / size.x, 1.0f); // UV koordinatlarının bitişi
+
+    ImVec2 pos0(pos.x + i, pos.y); // Çizimin başlangıç noktası
+    ImVec2 pos1(pos.x + i + 1, pos.y + size.y); // Çizimin bitiş noktası
+
+    ImU32 col = IM_COL32(255, 255, 255,
+                         static_cast<int>(255 * alpha)); // RGBA formatında renk
+    alpha = ImClamp(alpha, 0.f, 1.f); // Renk değerlerini sınırla
+    draw_list->AddImage(texture_id, pos0, pos1, uv0, uv1, col); // Görüntüyü çiz
+  }
 }
 
 bool afterTime(float time = 1, bool *affected = nullptr) {
@@ -190,6 +217,7 @@ void CMenu::Init(SDL_Window *window, SDL_GLContext gl_context) {
                                sizeof(ImageBytes::sir_bloody_miami_darryl_png),
                                &xtexture, &w, &h)) {
     this->loginRightImage = new ImTextureID((void *)(uintptr_t)xtexture);
+
     // Successfully loaded texture
     std::cout << "Successfully loaded texture" << std::endl;
   } else {
@@ -228,15 +256,15 @@ void CMenu::StyleColorsMine(ImGuiStyle *dst) {
 
   ImVec4 baseColor = ImVec4(0.019f, 0.572f, 0.071f, 1.0f); // #059212 rengi
 
-  ImVec4 buttonColor = ImVec4(0.16f, 0.16f, 0.16f, 1.0f); // Normal buton rengi
-  ImVec4 buttonHovered = ImVec4(0.019f, 0.572f, 0.071f, 1.0f); // Hover durumu
-  ImVec4 buttonActive = ImVec4(0.012f, 0.412f, 0.051f, 1.0f); // Tıklanmış durum
+  ImVec4 buttonColor = ImVec4(0.01f, 0.01f, 0.01f, 1.0f); // Normal buton rengi
+  ImVec4 buttonHovered = ImVec4(0.061f, 0.061f, 0.061f, 1.0f); // Hover durumu
+  ImVec4 buttonActive = ImVec4(0.1f, 0.1f, 0.1f, 1.0f); // Tıklanmış durum
 
-  ImVec4 frameBgColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // Koyu gri
+  ImVec4 frameBgColor = ImVec4(0.01f, 0.01f, 0.01f, 1.0f); // Koyu gri
   ImVec4 frameBgHoveredColor =
-      ImVec4(0.25f, 0.25f, 0.25f, 1.0f); // Hover durumunda koyu gri
+      ImVec4(0.01f, 0.01f, 0.01f, 1.0f); // Hover durumunda koyu gri
   ImVec4 frameBgActiveColor =
-      ImVec4(0.3f, 0.3f, 0.3f, 1.0f); // Tıklanmış durumda koyu gri
+      ImVec4(0.02f, 0.02f, 0.02f, 1.0f); // Tıklanmış durumda koyu gri
 
   ImGuiStyle *style = dst ? dst : &ImGui::GetStyle();
   ImVec4 *colors = style->Colors;
@@ -313,6 +341,22 @@ void CMenu::StyleColorsMine(ImGuiStyle *dst) {
 
 void CMenu::RenderLoginBase() {
 
+  static ImGuiBlur blurEffect;
+  // Test için bir ImGui penceresi oluşturma
+  // Test için bir texture oluşturma (sadece örnek)
+  ImVec2 uv0 = ImVec2(0.0f, 0.0f);
+  ImVec2 uv1 = ImVec2(1.0f, 1.0f);
+
+  // ImGui drawlist içinde blur efekti uygulama
+  blurEffect.ApplyBlur(ImGui::GetWindowDrawList(), *loginBgImage,
+                       ImVec2(1280, 720), uv0, uv1, true);
+
+  ImVec2 psp = ImGui::GetCurrentWindow()->Pos;
+
+  RenderImageWithGradient(
+      *loginBgImage, {psp.x, psp.y},
+      {config->width / 1.38f * fDpiScale, config->height * fDpiScale});
+
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
   ImGui::BeginChild("##login-left", {(config->width / 2) * fDpiScale, -1}, 0,
@@ -350,21 +394,26 @@ void CMenu::RenderLoginBase() {
                             {0 * fDpiScale, innerSpacingY});
         {
 
+          ImGui::PushFont(fonts->ifOpenSansMedium["lg"]);
           static char username[128] = "sasa";
           static char password[128] = "sasa";
-          ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Username");
+          ImGui::TextColored(ImVec4(.8, .8, .8, 1), "Username");
           ImGui::InputText("##username", username, IM_ARRAYSIZE(username),
                            ImGuiInputTextFlags_AutoSelectAll);
-          ImGui::TextColored(ImVec4(.55, .55, .55, .55), "Password");
+          ImGui::TextColored(ImVec4(.8, .8, .8, 1), "Password");
           ImGui::InputText("##password", password, IM_ARRAYSIZE(password),
                            ImGuiInputTextFlags_Password |
                                ImGuiInputTextFlags_AutoSelectAll);
 
           imspaceMacro(0 * fDpiScale, 12 * fDpiScale);
-          if (ImGui::Button("Login", {(config->width / 2 - 70) * fDpiScale,
+          ImGui::PopFont();
+
+          ImGui::PushFont(fonts->ifOpenSansBold["2xl"]);
+           if (ImGui::Button("Login", {(config->width / 2 - 70) * fDpiScale,
                                       55 * fDpiScale})) {
             printf("Login\n");
           }
+          ImGui::PopFont();
         }
 
         ImGui::PopStyleVar(4);
@@ -483,10 +532,10 @@ void CMenu::Render() {
 
     if (config->stateOpacity <= .8f && config->lastState == config->state) {
       switch (config->lastState) {
-      case EMenuState::LOGIN: {
+      case EMenuState::LOGIN:
         config->width = 750;
         config->height = 400;
-      } break;
+        break;
       case EMenuState::MAIN:
         config->width = 200;
         config->height = 200;

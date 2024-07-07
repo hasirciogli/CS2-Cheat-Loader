@@ -41,6 +41,7 @@ public:
   float fLastDpiScale = 1.0f;
 
   ImTextureID* loginRightImage = nullptr;
+  ImTextureID* loginBgImage = nullptr;
 
   bool firstLoadInited = false;
 

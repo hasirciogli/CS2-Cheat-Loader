@@ -58,17 +58,17 @@ int main(int, char **) {
   // buildFonts();
   // return 0;
 
-  // File fileX("./assets/images/sir-bloody-miami-darryl.png");
+  // File fileX("./assets/images/images.jpeg");
 
-  //   auto xx =
-  //   fileX.readFileToByteArray("./assets/images/sir-bloody-miami-darryl.png");
+  // auto xx =
+  //     fileX.readFileToByteArray("./assets/images/images.jpeg");
 
-  //   // write to file.
+  // // write to file.
 
-  //   fileX.saveByteArrayToFile("./assets/images/sir-bloody-miami-darryl.png.txt",
-  //   xx, "sir-bloody-miami-darryl.png");
+  // fileX.saveByteArrayToFile("./assets/images/images.png.txt",
+  //                           xx, "LoaderBgImage");
 
-  //   std::cout << "xx.size() = " << xx.size() << std::endl;
+  // std::cout << "xx.size() = " << xx.size() << std::endl;
 #endif
 
   // Setup SDL

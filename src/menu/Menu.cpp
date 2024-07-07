@@ -11,11 +11,13 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include <GL/glew.h>
+#include <SDL_stdinc.h>
 #include <chrono>
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
+#include <sys/_types/_uintptr_t.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -27,6 +29,52 @@
 void fnRenderDebugMenu();
 void fnPushMenuStyleVars();
 void fnPopMenuStyleVars();
+
+// Simple helper function to load an image from a byte array into an OpenGL
+// texture with common settings
+bool LoadTextureFromByteArray(const unsigned char *image_data, int data_size,
+                              GLuint *out_texture, int *out_width,
+                              int *out_height) {
+  if (image_data == NULL)
+    return false;
+
+  int image_width, image_height, channels;
+  unsigned char *decoded_data = stbi_load_from_memory(
+      image_data, data_size, &image_width, &image_height, &channels, 4);
+  if (decoded_data == NULL)
+    return false;
+
+  // Create an OpenGL texture identifier
+  GLuint image_texture;
+  glGenTextures(1, &image_texture);
+  glBindTexture(GL_TEXTURE_2D, image_texture);
+
+  // Setup filtering parameters for display
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                  GL_CLAMP_TO_EDGE); // This is required on WebGL for non
+                                     // power-of-two textures
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+
+  // Set pixel storage mode
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+  // Upload pixels into texture
+#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA,
+               GL_UNSIGNED_BYTE, decoded_data);
+
+  stbi_image_free(decoded_data);
+
+  *out_texture = image_texture;
+  *out_width = image_width;
+  *out_height = image_height;
+
+  return true;
+}
 
 bool afterTime(float time = 1, bool *affected = nullptr) {
   // Başlangıç zamanını al
@@ -136,10 +184,33 @@ void CMenu::Init(SDL_Window *window, SDL_GLContext gl_context) {
   int w, h;
   w = 512;
   h = 384;
-  // load login right image
-  this->loginRightImage = reinterpret_cast<ImTextureID *>(stbi_load_from_memory(
-      ImageBytes::sir_bloody_miami_darryl_png,
-      ImageBytes::sir_bloody_miami_darryl_png_size, &w, &h, nullptr, 4));
+  GLuint xtexture = 0;
+
+  if (LoadTextureFromByteArray(ImageBytes::sir_bloody_miami_darryl_png,
+                               sizeof(ImageBytes::sir_bloody_miami_darryl_png),
+                               &xtexture, &w, &h)) {
+    this->loginRightImage = new ImTextureID((void *)(uintptr_t)xtexture);
+    // Successfully loaded texture
+    std::cout << "Successfully loaded texture" << std::endl;
+  } else {
+    // Failed to load texture
+    std::cout << "Failed to load texture" << std::endl;
+  }
+
+  w = 300;
+  h = 168;
+  xtexture = 0;
+
+  if (LoadTextureFromByteArray(ImageBytes::LoaderBgImage,
+                               sizeof(ImageBytes::LoaderBgImage), &xtexture, &w,
+                               &h)) {
+    this->loginBgImage = new ImTextureID((void *)(uintptr_t)xtexture);
+    // Successfully loaded texture
+    std::cout << "Successfully loaded texture" << std::endl;
+  } else {
+    // Failed to load texture
+    std::cout << "Failed to load texture" << std::endl;
+  }
 
   std::cout << this->fonts->ifOpenSansBold.size() << std::endl;
 
@@ -241,6 +312,7 @@ void CMenu::StyleColorsMine(ImGuiStyle *dst) {
 }
 
 void CMenu::RenderLoginBase() {
+
   ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
   ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
   ImGui::BeginChild("##login-left", {(config->width / 2) * fDpiScale, -1}, 0,
@@ -315,10 +387,25 @@ void CMenu::RenderLoginBase() {
       ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
   {
     // image
-    ImGui::Image(*loginRightImage, ImVec2(100, 100));
+
+    float hfW = config->width / 2;
+    float hfH = config->height * 1.17;
+
+    float iWidth = 512;
+    float iHeight = 384;
+
+    float cWidth = iWidth + hfH - iHeight;
+    float cHeight = hfH;
+
+    imspaceMacro(-89 * fDpiScale, -10 * fDpiScale);
+    ImGui::Image(*loginRightImage, {cWidth * fDpiScale, cHeight * fDpiScale});
   }
   ImGui::EndChild();
   ImGui::PopStyleVar(2);
+
+  // imspaceMacro(0 * fDpiScale, 0 * fDpiScale);
+  // ImGui::Image(*loginBgImage,
+  //              {config->width * fDpiScale, config->height * fDpiScale});
 }
 
 void loadingPage() {
@@ -333,8 +420,10 @@ void loadingPage() {
 }
 
 void CMenu::Render() {
+  static GLuint texture = 0;
 
   if (!this->bRenderInit) {
+
     this->bRenderInit = true;
   }
 

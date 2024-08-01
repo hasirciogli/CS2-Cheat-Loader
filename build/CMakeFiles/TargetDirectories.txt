@@ -1,3 +1,0 @@
-/Users/hasircioglu/Desktop/Loader/build/CMakeFiles/Loader.dir
-/Users/hasircioglu/Desktop/Loader/build/CMakeFiles/edit_cache.dir
-/Users/hasircioglu/Desktop/Loader/build/CMakeFiles/rebuild_cache.dir
